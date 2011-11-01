@@ -9,7 +9,7 @@ sub import {
 }
 
 
-sub preprocess {
+sub bibtex_preprocess {
     my %params=@_;
     return 1;
 }
