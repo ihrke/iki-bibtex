@@ -76,7 +76,6 @@ sub bibtex_preprocess {
 		  next if $entry->metatype ne BTE_REGULAR;
 		  if ( $entry->key eq $key ){
 				$found=$entry;
-				print $entry->print_s;
 		  }
    }
 	 unless(defined $found){
