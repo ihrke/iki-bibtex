@@ -22,4 +22,12 @@ format (authors (year): journal. volume (number), pages.).
 
     [[!bibtex file="mybib.bib" key="key1" format="citation"]]
 
+Combine with toggle-plugin to optionally display the raw bibtex
+
+    [[!bibtex key="Ihrke2011"]] [[!toggle id="bibtexentry" text="(entry)"]]
+    [[!toggleable  id="bibtexentry" text="""
+    [[!bibtex key="Ihrke2011" format="raw"]]
+    [[!toggle id="bibtexentry" text="(hide)"]]
+    """]]
+    
 
