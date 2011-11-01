@@ -15,6 +15,12 @@ Features:
 
 * supports websetup
 
+## Require ##
+
+* [Text::BibTeX] (available from CPAN)
+
+[Text::BibTeX]: http://search.cpan.org/~ambs/Text-BibTeX-0.61/lib/Text/BibTeX.pm
+
 ## Examples ##
 
 Output from file mybib.bib, bibtex key 'key1' in a citation-like

@@ -5,7 +5,7 @@ use strict;
 use IkiWiki 3.00;
 
 use Text::BibTeX;
-use Text::Format;
+#use Text::Format;
 
 sub import {
     hook(type => "getsetup", id => "bibtex", call => \&getsetup);
