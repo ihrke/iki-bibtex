@@ -73,7 +73,7 @@ sub bibtex_preprocess {
 	 while ($entry = new Text::BibTeX::Entry $bibfile)
 	 {
 		  next unless $entry->parse_ok;
-		  
+		  next if $entry->metatype ne BTE_REGULAR;
 		  if ( $entry->key eq $key ){
 				$found=$entry;
 				print $entry->print_s;
@@ -85,15 +85,64 @@ sub bibtex_preprocess {
 
 	 my $output="";
 	 if( $output_format eq "citation"){
-
+		  $output=format_citation( $found );
 	 } else {
-		  $output="<div id='bibtex_entry'>".$found->print_s."</div>";
+		  $output="<pre id='bibtex_entry'>".$found->print_s."</pre>";
 	 }
 
 	 
 #	 my $formatter=Text::Format->new( );
 #    return "<pre id='bibtex'>".$formatter->format($found->print_s) ."</pre>";
 	 return $output;
+}
+
+sub format_citation() {
+	 my $entry=shift;
+	 my $output;
+
+	 
+	 my @names = $entry->names ('author');
+	 my @lasts;
+	 foreach( @names ){
+		  push( @lasts, ($_->part('last'))[0] );
+	 }
+	 $output=join(",", @lasts ).". ";
+
+	 my $title;
+	 my $journal;
+	 my $publisher;
+	 my $year;
+	 ($title,$year,$journal,$publisher)=$entry->get('title','year',
+																	'journal','publisher');
+	 if( defined $year ){
+		  $output=$output."($year): ";
+	 }
+	 
+	 if( defined $title ){
+		  $output=$output."**$title.**";
+	 }
+	 if( defined $journal ){
+		  $output=$output."*$journal.*";
+	 }
+	 if( defined $publisher ){
+		  $output=$output."*$publisher.*";
+	 }
+
+	 my $volume;
+	 my $number;
+	 my $pages;
+	 ($volume,$number,$pages)=$entry->get('volume','number','pages');
+	 if( defined $volume ){
+		  $output=$output."$volume";
+	 }
+	 if( defined $number ){
+		  $output=$output."($number)";
+	 }
+	 if( defined $pages ){
+		  $output=$output.", $pages";
+	 }
+	 
+	 return $output.".";
 }
 
 
