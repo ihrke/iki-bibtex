@@ -12,6 +12,7 @@ bibtex-file (either checked into ikiwiki, or not).
 [ikiwiki]: http://ikiwiki.info/
 
 Features:
+
 * supports websetup
 
 ## Examples ##
@@ -19,6 +20,6 @@ Features:
 Output from file mybib.bib, bibtex key 'key1' in a citation-like
 format (authors (year): journal. volume (number), pages.).
 
-   [[!bibtex file="mybib.bib" key="key1" format="citation"]]
+    [[!bibtex file="mybib.bib" key="key1" format="citation"]]
 
 
