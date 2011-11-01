@@ -17,7 +17,7 @@ Features:
 
 ## Require ##
 
-* [Text::BibTeX] (available from CPAN)
+* [Text::BibTeX] - available from CPAN
 
 [Text::BibTeX]: http://search.cpan.org/~ambs/Text-BibTeX-0.61/lib/Text/BibTeX.pm
 
