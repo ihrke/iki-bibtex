@@ -7,13 +7,21 @@ This [ikiwiki]-plugin provides a
 directive for [ikiwiki]. 
 
 So far, it can display a raw or formatted bibtex-entry from a 
-bibtex-file (either checked into ikiwiki, or not).
+bibtex-file (either checked into ikiwiki, or not) and display a 
+list of all bibtex-keys used on a key.
 
 [ikiwiki]: http://ikiwiki.info/
 
 Features:
 
+* three different output formats for citations:
+  + cite - Author (year)
+  + citation - Author1, Author2 (year): **Title.** *Journal*
+  vol(num). pp.
+  + raw - raw bibtex-entry preformatted
 * supports websetup
+* bibliography
+
 
 ## Requirements ##
 
@@ -36,4 +44,10 @@ Combine with toggle-plugin to optionally display the raw bibtex
     [[!toggle id="bibtexentry" text="(hide)"]]
     """]]
     
+Add a bibliography that includes all bibtex-directives from that page
 
+
+    ## Bibliography ##
+    [[!bibtex_bibliography ]]
+
+    ----
