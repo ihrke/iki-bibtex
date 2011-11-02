@@ -7,10 +7,12 @@ use IkiWiki 3.00;
 use Text::BibTeX;
 #use Text::Format;
 
+my %bibtex_keys; # holds key=>file pairs
+
 sub import {
     hook(type => "getsetup", id => "bibtex", call => \&getsetup);
     hook(type => "preprocess", id => "bibtex", call => \&bibtex_preprocess);
-
+    hook(type => "preprocess", id => "bibtex_bibliography", call => \&bibliography_preprocess);
 }
 
 sub getsetup () {
@@ -32,14 +34,38 @@ sub getsetup () {
 		  type => "string",
 		  safe=>1,
 		  description=> "output format for the bibtex-entry",
-		  example => "raw,citation",
+		  example => "cite,raw,citation",
 		  rebuild => 1,
 	 },
 }
+
+
+sub get_bibtex_entry_from_file {
+	 my $file=shift;
+	 my $key=shift;
+
+	 my $bibfile = new Text::BibTeX::File $file;
+	 my $entry;
+	 my $found;
+	 while ($entry = new Text::BibTeX::Entry $bibfile)
+	 {
+		  next unless $entry->parse_ok;
+		  next if $entry->metatype ne BTE_REGULAR;
+		  if ( $entry->key eq $key ){
+				$found=$entry;
+		  }
+   }
+	 unless(defined $found){
+		  error("key $key not in file $file\n");
+	 }
+
+	 return $found;
+}
+
 sub bibtex_preprocess {
     my %params=@_;
 	 my $bibtex_file="";
-	 my $output_format="raw";
+	 my $output_format="citation";
 	 if( exists $config{bibtex_file} ){
 		  $bibtex_file=$config{bibtex_file};
 	 } 
@@ -67,34 +93,45 @@ sub bibtex_preprocess {
 	 debug(">> bibtex.pm: $bibtex_file\n");
 	 debug(">> bibtex.pm: $key\n");
 
-	 my $bibfile = new Text::BibTeX::File $bibtex_file;
-	 my $entry;
-	 my $found;
-	 while ($entry = new Text::BibTeX::Entry $bibfile)
-	 {
-		  next unless $entry->parse_ok;
-		  next if $entry->metatype ne BTE_REGULAR;
-		  if ( $entry->key eq $key ){
-				$found=$entry;
-		  }
-   }
-	 unless(defined $found){
-		  error("key $key not in file $bibtex_file\n");
-	 }
+	 my $entry = get_bibtex_entry_from_file( $bibtex_file, $key );
 
 	 my $output="";
 	 if( $output_format eq "citation"){
-		  $output=format_citation( $found );
+		  $output=format_citation( $entry );
+	 } elsif ( $output_format eq "cite"){
+		  $output=format_cite( $entry );
 	 } else {
-		  $output="<pre id='bibtex_entry'>".$found->print_s."</pre>";
+		  $output="<pre id='bibtex_entry'>".$entry->print_s."</pre>";
 	 }
 
-	 
+	 $bibtex_keys{$key}=$bibtex_file;
 #	 my $formatter=Text::Format->new( );
 #    return "<pre id='bibtex'>".$formatter->format($found->print_s) ."</pre>";
 	 return $output;
 }
 
+sub uniq {
+    return keys %{{ map { $_ => 1 } @_ }};
+}
+
+
+sub bibliography_preprocess {
+    my %params=@_;
+
+	 my $entry;
+	 my $output;
+	 foreach( keys %bibtex_keys ){
+		  $entry=get_bibtex_entry_from_file( $bibtex_keys{ $_ }, $_ );
+		  $output .= "* ".format_citation( $entry )."\n";
+	 }
+
+	 return $output;
+}
+
+
+
+## formatting
+##-----------------
 sub format_citation() {
 	 my $entry=shift;
 	 my $output;
@@ -142,6 +179,26 @@ sub format_citation() {
 	 }
 	 
 	 return $output.".";
+}
+
+## Author (Year) output
+sub format_cite() {
+	 my $entry=shift;
+	 my $output;
+
+	 my @names = $entry->names ('author');
+	 my @lasts;
+	 foreach( @names ){
+		  push( @lasts, ($_->part('last'))[0] );
+	 }
+	 $output=join(",", @lasts ).". ";
+
+	 my $year;
+	 $year=$entry->get('year');
+	 if( defined $year ){
+		  $output=$output."($year)";
+	 }
+	 return $output;
 }
 
 

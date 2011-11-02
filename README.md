@@ -15,7 +15,7 @@ Features:
 
 * supports websetup
 
-## Require ##
+## Requirements ##
 
 * [Text::BibTeX] - available from CPAN
 
