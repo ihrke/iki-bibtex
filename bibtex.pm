@@ -44,6 +44,7 @@ sub get_bibtex_entry_from_file {
 	 my $file=shift;
 	 my $key=shift;
 
+	 Text::BibTeX::delete_all_macros();
 	 my $bibfile = new Text::BibTeX::File $file;
 	 my $entry;
 	 my $found;
