@@ -5,9 +5,11 @@ use strict;
 use IkiWiki 3.00;
 
 use Text::BibTeX;
+use Data::Dumper;
+
 #use Text::Format;
 
-my %bibtex_keys; # holds key=>file pairs
+my %bibtex_keys; # holds page=>[ key=>file, ... ]
 
 sub import {
     hook(type => "getsetup", id => "bibtex", call => \&getsetup);
@@ -65,6 +67,7 @@ sub get_bibtex_entry_from_file {
 
 sub bibtex_preprocess {
     my %params=@_;
+	 my $page=$params{destpage}; # this is the current page
 	 my $bibtex_file="";
 	 my $output_format="citation";
 	 if( exists $config{bibtex_file} ){
@@ -105,9 +108,8 @@ sub bibtex_preprocess {
 		  $output="<pre id='bibtex_entry'>".$entry->print_s."</pre>";
 	 }
 
-	 $bibtex_keys{$key}=$bibtex_file;
-#	 my $formatter=Text::Format->new( );
-#    return "<pre id='bibtex'>".$formatter->format($found->print_s) ."</pre>";
+	 $bibtex_keys{$page}{$key}=$bibtex_file;
+
 	 return $output;
 }
 
@@ -118,11 +120,14 @@ sub uniq {
 
 sub bibliography_preprocess {
     my %params=@_;
+	 my $page=$params{'page'};
 
 	 my $entry;
 	 my $output;
-	 foreach( keys %bibtex_keys ){
-		  $entry=get_bibtex_entry_from_file( $bibtex_keys{ $_ }, $_ );
+
+
+	 foreach( keys %{ $bibtex_keys{$page} } ){
+		  $entry=get_bibtex_entry_from_file( $bibtex_keys{$page}{ $_ }, $_ );
 		  $output .= "* ".format_citation( $entry )."\n";
 	 }
 
@@ -142,6 +147,9 @@ sub format_citation() {
 	 my @lasts;
 	 foreach( @names ){
 		  push( @lasts, ($_->part('last'))[0] );
+		  if( $lasts[$#lasts] =~ /{(.*)}/ ){
+				$lasts[$#lasts] = $1;
+		  }
 	 }
 	 $output=join(",", @lasts ).". ";
 
@@ -156,6 +164,9 @@ sub format_citation() {
 	 }
 	 
 	 if( defined $title ){
+		  if( $title =~ /{(.*)}/ ){
+				$title = $1;
+		  }
 		  $output=$output."**$title.** ";
 	 }
 	 if( defined $journal ){
@@ -191,7 +202,7 @@ sub format_cite() {
 	 my @lasts;
 	 foreach( @names ){
 		  push( @lasts, ($_->part('last'))[0] );
-		  if( $lasts[$#lasts] =~ /{(.*)/ ){
+		  if( $lasts[$#lasts] =~ /{(.*)}/ ){
 				$lasts[$#lasts] = $1;
 		  }
 	 }
