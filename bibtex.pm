@@ -151,7 +151,7 @@ sub format_citation() {
 				$lasts[$#lasts] = $1;
 		  }
 	 }
-	 $output=join(",", @lasts ).". ";
+	 $output=join(", ", @lasts ).". ";
 
 	 my $title;
 	 my $journal;
@@ -167,12 +167,21 @@ sub format_citation() {
 		  if( $title =~ /{(.*)}/ ){
 				$title = $1;
 		  }
+		  if( $title =~ /(.*)\.$/ ){
+				$title = $1;
+		  }
 		  $output=$output."**$title.** ";
 	 }
 	 if( defined $journal ){
 		  $output=$output."*$journal.* ";
+		  if( $journal =~ /(.*)\.$/ ){
+				$journal = $1;
+		  }
 	 }
 	 if( defined $publisher ){
+		  if( $publisher =~ /(.*)\.$/ ){
+				$publisher = $1;
+		  }
 		  $output=$output."*$publisher.* ";
 	 }
 
@@ -187,10 +196,16 @@ sub format_citation() {
 		  $output=$output."($number)";
 	 }
 	 if( defined $pages ){
-		  $output=$output.", $pages";
+		  if( defined $number || defined $volume ){
+				$output.=", ";
+		  }
+		  $output.=$pages;
 	 }
-	 
-	 return $output.".";
+	 if( $output =~ /.*\.\s*$/ ){
+		  return $output;
+	 } else {
+		  return $output.".";
+	 }
 }
 
 ## Author (Year) output
@@ -206,7 +221,7 @@ sub format_cite() {
 				$lasts[$#lasts] = $1;
 		  }
 	 }
-	 $output=join(",", @lasts )." ";
+	 $output=join(", ", @lasts )." ";
 
 	 my $year;
 	 $year=$entry->get('year');
