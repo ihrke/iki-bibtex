@@ -156,13 +156,13 @@ sub format_citation() {
 	 }
 	 
 	 if( defined $title ){
-		  $output=$output."**$title.**";
+		  $output=$output."**$title.** ";
 	 }
 	 if( defined $journal ){
-		  $output=$output."*$journal.*";
+		  $output=$output."*$journal.* ";
 	 }
 	 if( defined $publisher ){
-		  $output=$output."*$publisher.*";
+		  $output=$output."*$publisher.* ";
 	 }
 
 	 my $volume;
@@ -191,8 +191,11 @@ sub format_cite() {
 	 my @lasts;
 	 foreach( @names ){
 		  push( @lasts, ($_->part('last'))[0] );
+		  if( $lasts[$#lasts] =~ /{(.*)/ ){
+				$lasts[$#lasts] = $1;
+		  }
 	 }
-	 $output=join(",", @lasts ).". ";
+	 $output=join(",", @lasts )." ";
 
 	 my $year;
 	 $year=$entry->get('year');
