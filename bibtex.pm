@@ -144,6 +144,10 @@ sub format_citation() {
 
 	 
 	 my @names = $entry->names ('author');
+	 if( !@names ){
+		  @names = $entry->names ('editor');
+	 }
+
 	 my @lasts;
 	 foreach( @names ){
 		  push( @lasts, ($_->part('last'))[0] );
@@ -214,6 +218,10 @@ sub format_cite() {
 	 my $output;
 
 	 my @names = $entry->names ('author');
+	 if( !@names ){
+		  @names = $entry->names ('editor');
+	 }
+
 	 my @lasts;
 	 foreach( @names ){
 		  push( @lasts, ($_->part('last'))[0] );
