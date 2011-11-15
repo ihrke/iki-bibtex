@@ -39,6 +39,13 @@ sub getsetup () {
 		  example => "cite,raw,citation",
 		  rebuild => 1,
 	 },
+	 bibtex_link_entry => {
+		  type => "string",
+		  safe=>1,
+		  description => "url to link to with cite-commands ([[file]] and [[key]] substituted)",
+		  example => "http://myhost.org/script?file=[[file]]&key=[[key]]",
+		  rebuild => 1,
+	 },
 }
 
 
@@ -70,6 +77,7 @@ sub bibtex_preprocess {
 	 my $page=$params{destpage}; # this is the current page
 	 my $bibtex_file="";
 	 my $output_format="citation";
+
 	 if( exists $config{bibtex_file} ){
 		  $bibtex_file=$config{bibtex_file};
 	 } 
@@ -141,6 +149,10 @@ sub bibliography_preprocess {
 sub format_citation() {
 	 my $entry=shift;
 	 my $output;
+	 my $link=""; 
+	 if( exists $config{bibtex_link_entry} ){
+		  $link=$config{bibtex_link_entry};
+	 }
 
 	 
 	 my @names = $entry->names ('author');
@@ -167,6 +179,15 @@ sub format_citation() {
 		  $output=$output."($year): ";
 	 }
 	 
+	 if( $link ne "" ){
+		  my $key=$entry->key;
+		  $link =~ s/\[\[file\]\]/$config{bibtex_file}/;
+		  $link =~ s/\[\[key\]\]/$key/;
+		  $output = "[".$output."](".$link.")";
+	 }
+
+	 
+
 	 if( defined $title ){
 		  if( $title =~ /{(.*)}/ ){
 				$title = $1;
@@ -216,6 +237,10 @@ sub format_citation() {
 sub format_cite() {
 	 my $entry=shift;
 	 my $output;
+	 my $link=""; 
+	 if( exists $config{bibtex_link_entry} ){
+		  $link=$config{bibtex_link_entry};
+	 }
 
 	 my @names = $entry->names ('author');
 	 if( !@names ){
@@ -236,6 +261,14 @@ sub format_cite() {
 	 if( defined $year ){
 		  $output=$output."($year)";
 	 }
+
+	 if( $link ne "" ){
+		  my $key=$entry->key;
+		  $link =~ s/\[\[file\]\]/$config{bibtex_file}/;
+		  $link =~ s/\[\[key\]\]/$key/;
+		  $output = "[".$output."](".$link.")";
+	 }
+
 	 return $output;
 }
 

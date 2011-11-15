@@ -21,7 +21,7 @@ Features:
   + raw - raw bibtex-entry preformatted
 * supports websetup
 * bibliography
-
+* supports linking to external URL for each key
 
 ## Requirements ##
 
