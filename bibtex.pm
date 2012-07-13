@@ -92,6 +92,7 @@ sub bibtex_preprocess {
 	 if( exists $params{format} ){
 		  $output_format=$params{format};
 	 }
+	 $bibtex_file = IkiWiki::srcfile($bibtex_file) if ( ! -e $bibtex_file );
 	 unless( -e $bibtex_file ){
 		  error("bibtex-file $bibtex_file doesn't exist\n");
 	 }
